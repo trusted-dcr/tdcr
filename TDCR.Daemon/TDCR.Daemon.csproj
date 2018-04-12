@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Grpc" Version="1.10.1" />
+    <PackageReference Include="Grpc.Tools" Version="1.10.1" />
+    <PackageReference Include="NLog" Version="4.5.2" />
+    <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TDCR.CoreLib\TDCR.CoreLib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="protoc^&#xD;&#xA;    --csharp_out=&quot;$(ProjectDir)Wire&quot;^&#xD;&#xA;    --grpc_out=&quot;$(ProjectDir)Wire&quot;^&#xD;&#xA;    --plugin=protoc-gen-grpc=&quot;%HOMEPATH%\.nuget\packages\grpc.tools\1.10.1\tools\windows_x64\grpc_csharp_plugin.exe&quot;^&#xD;&#xA;    --proto_path=&quot;$(ProjectDir)Wire\protos&quot;^&#xD;&#xA;    --proto_path=&quot;$(SolutionDir)TDCR.CoreLib\Wire\protos&quot;^&#xD;&#xA;    &quot;$(ProjectDir)Wire\protos\api.proto&quot;" />
+  </Target>
+
+</Project>

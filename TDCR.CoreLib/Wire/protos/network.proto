@@ -1,0 +1,23 @@
+syntax = "proto3";
+option csharp_namespace = "TDCR.CoreLib.Wire.Network";
+package tdcr.corelib.network;
+
+message Uid {
+  bytes data = 1;
+}
+
+message Addr {
+  bytes ip = 1;
+  uint32 port = 2;
+}
+
+message Container {
+  enum PayloadType {
+    HELLO_MSG = 0;
+    HELLO_ACK = 1;
+  }
+
+  Uid sender = 1;
+  PayloadType type = 2;
+  bytes payload = 3;
+}

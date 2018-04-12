@@ -1,0 +1,13 @@
+syntax = "proto3";
+option csharp_namespace = "TDCR.CoreLib.Wire.Discovery";
+package tdcr.corelib.discovery;
+
+import "network.proto";
+
+message HelloMsg {
+  uint32 version = 1;
+  tdcr.corelib.network.Addr receiver = 2;
+}
+
+message HelloAck {
+}

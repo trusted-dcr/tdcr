@@ -1,0 +1,22 @@
+syntax = "proto3";
+option csharp_namespace = "TDCR.Daemon.Wire";
+package tdcr.daemon.api;
+
+import "google/protobuf/empty.proto";
+import "network.proto";
+
+message SemVer {
+  uint32 major = 1;
+  uint32 minor = 2;
+  uint32 patch = 3;
+}
+
+service Api {
+  rpc Stop (google.protobuf.Empty) returns (google.protobuf.Empty);
+  rpc Version (google.protobuf.Empty) returns (SemVer);
+
+  rpc AddPeer (tdcr.corelib.network.Addr) returns (google.protobuf.Empty);
+  rpc RemovePeer (tdcr.corelib.network.Addr) returns (google.protobuf.Empty);
+  rpc ConnectTo (tdcr.corelib.network.Addr) returns (google.protobuf.Empty);
+  rpc DisconnectFrom (tdcr.corelib.network.Addr) returns (google.protobuf.Empty);
+}
