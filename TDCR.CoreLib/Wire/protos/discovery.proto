@@ -5,9 +5,11 @@ package tdcr.corelib.discovery;
 import "network.proto";
 
 message HelloMsg {
-  uint32 version = 1;
-  tdcr.corelib.network.Addr receiver = 2;
+  uint32 nonce = 1;
+  uint32 version = 2;
+  tdcr.corelib.network.Addr receiver = 3;
 }
 
 message HelloAck {
+  uint32 nonce = 1;
 }

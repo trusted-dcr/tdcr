@@ -33,6 +33,7 @@ namespace TDCR.CoreLib.Network
 
         private ushort port;
         private Dictionary<Uid, TcpClient> conns;
+        private Random rng;
 
         private TcpListener listener;
         private CancellationTokenSource listenerCancellation;
@@ -45,6 +46,7 @@ namespace TDCR.CoreLib.Network
             OwnUid = ownUid;
             this.logger = logger;
             conns = new Dictionary<Uid, TcpClient>();
+            rng = new Random();
 
             if (logger != null)
             {
@@ -206,13 +208,15 @@ namespace TDCR.CoreLib.Network
             Addr addr = GetAddr(conn);
 
             // Send HELLO
+            uint nonce = CreateNonce();
             SendAsync(conn, new Hello
             {
+                Nonce = nonce,
                 Receiver = addr,
                 Version = Constants.Version
             });
 
-            // Recv HELLOACK and HELLO
+            // Receive loop to complete handshake
             PeerStatus status = PeerStatus.Waiting;
             Uid peer = null;
             while (status != PeerStatus.Connected)
@@ -220,6 +224,7 @@ namespace TDCR.CoreLib.Network
                 // Receive single message
                 Container cont = Receive(conn);
 
+                // HELLO
                 if (cont.Payload is Hello hello && !status.HasFlag(PeerStatus.SentAck))
                 {
                     // Version compatibility check
@@ -232,13 +237,27 @@ namespace TDCR.CoreLib.Network
 
                     // Send HELLOACK
                     // Await so we get the TCP ACK before updating the status
-                    await SendAsync(conn, new HelloAck());
+                    await SendAsync(conn, new HelloAck
+                    {
+                        Nonce = hello.Nonce // their nonce
+                    });
                     status |= PeerStatus.SentAck;
                 }
+
+                // HELLOACK
                 else if (cont.Payload is HelloAck ack && !status.HasFlag(PeerStatus.RecvAck))
                 {
+                    // Nonce check
+                    if (ack.Nonce != nonce)
+                    {
+                        logger?.Warn($"Handshake failed ({addr}): Wrong nonce");
+                        break;
+                    }
+
                     status |= PeerStatus.RecvAck;
                 }
+
+                // Invalid message for current state
                 else
                 {
                     logger?.Warn($"Handshake failed ({addr}): Invalid message ({cont.Payload.GetType()})");
@@ -269,6 +288,13 @@ namespace TDCR.CoreLib.Network
         public static Addr GetAddr(TcpClient conn)
         {
             return new Addr((IPEndPoint)conn.Client.RemoteEndPoint);
+        }
+
+        public uint CreateNonce()
+        {
+            byte[] buffer = new byte[4];
+            rng.NextBytes(buffer);
+            return BitConverter.ToUInt32(buffer, 0);
         }
     }
 }
