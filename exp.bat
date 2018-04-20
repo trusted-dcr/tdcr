@@ -13,6 +13,7 @@ goto HELP
   call tdcr start --port 8666 --rpc-port 8665
 
   call tdcr exec --rpc-port 8554 ConnectTo 127.0.0.1 8666
+  timeout 2 >nul
 
   call tdcr stop --rpc-port 8554
   call tdcr stop --rpc-port 8665

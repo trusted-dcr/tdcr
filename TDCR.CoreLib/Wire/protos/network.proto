@@ -13,8 +13,10 @@ message Addr {
 
 message Container {
   enum PayloadType {
-    HELLO_MSG = 0;
+    HELLO = 0;
     HELLO_ACK = 1;
+    GET_PEERS = 2;
+    PEER_LIST = 3;
   }
 
   Uid sender = 1;

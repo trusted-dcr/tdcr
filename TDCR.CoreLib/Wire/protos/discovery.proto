@@ -13,3 +13,11 @@ message HelloMsg {
 message HelloAck {
   uint32 nonce = 1;
 }
+
+message GetPeers {
+  uint32 amount = 1;
+}
+
+message PeerList {
+  repeated tdcr.corelib.network.Addr peers = 1;
+}

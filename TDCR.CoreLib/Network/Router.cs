@@ -20,14 +20,22 @@ namespace TDCR.CoreLib.Network
 
         public event RecvHandler<Hello> RecvHello;
         public event RecvHandler<HelloAck> RecvHelloAck;
+        public event RecvHandler<GetPeers> RecvGetPeers;
+        public event RecvHandler<PeerList> RecvPeerList;
 
         public event RecvRawHandler<Hello> RecvRawHello;
         public event RecvRawHandler<HelloAck> RecvRawHelloAck;
+        public event RecvRawHandler<GetPeers> RecvRawGetPeers;
+        public event RecvRawHandler<PeerList> RecvRawPeerList;
 
         public event SentHandler<HelloAck> SentHelloAck;
+        public event SentHandler<GetPeers> SentGetPeers;
+        public event SentHandler<PeerList> SentPeerList;
 
         public event SentRawHandler<Hello> SentRawHello;
         public event SentRawHandler<HelloAck> SentRawHelloAck;
+        public event SentRawHandler<GetPeers> SentRawGetPeers;
+        public event SentRawHandler<PeerList> SentRawPeerList;
 
         public Uid OwnUid { get; }
 
@@ -50,14 +58,18 @@ namespace TDCR.CoreLib.Network
 
             if (logger != null)
             {
-                Connected += (uid, addr, _) => logger?.Info($"Connected -- {addr}/{uid}");
+                Connected    += (uid, addr, _) => logger?.Info($"Connected -- {addr}/{uid}");
                 Disconnected += (uid, addr, _) => logger?.Info($"Disconnected -- {addr}/{uid}");
 
-                RecvRawHello += (addr, p, r) => logger?.Debug($"HELLO <- {addr}");
+                RecvRawHello    += (addr, p, r) => logger?.Debug($"HELLO <- {addr}");
                 RecvRawHelloAck += (addr, p, r) => logger?.Debug($"HELLOACK <- {addr}");
+                RecvRawGetPeers += (addr, p, r) => logger?.Debug($"GETPEERS <- {addr}");
+                RecvRawPeerList += (addr, p, r) => logger?.Debug($"PEERLIST <- {addr}");
 
-                SentRawHello += (addr, p, r) => logger?.Debug($"HELLO -> {addr}");
+                SentRawHello    += (addr, p, r) => logger?.Debug($"HELLO -> {addr}");
                 SentRawHelloAck += (addr, p, r) => logger?.Debug($"HELLOACK -> {addr}");
+                SentRawGetPeers += (addr, p, r) => logger?.Debug($"GETPEERS -> {addr}");
+                SentRawPeerList += (addr, p, r) => logger?.Debug($"PEERLIST -> {addr}");
             }
 
             listener = new TcpListener(IPAddress.Any, port);
@@ -120,6 +132,12 @@ namespace TDCR.CoreLib.Network
                 case HelloAck p:
                     SentHelloAck(target, p, this);
                     break;
+                case GetPeers p:
+                    SentGetPeers(target, p, this);
+                    break;
+                case PeerList p:
+                    SentPeerList(target, p, this);
+                    break;
                 default:
                     throw new ArgumentException("Unknown payload type", nameof(payload));
             }
@@ -148,6 +166,12 @@ namespace TDCR.CoreLib.Network
                 case HelloAck p:
                     SentRawHelloAck?.Invoke(addr, p, this);
                     break;
+                case GetPeers p:
+                    SentRawGetPeers?.Invoke(addr, p, this);
+                    break;
+                case PeerList p:
+                    SentRawPeerList?.Invoke(addr, p, this);
+                    break;
                 default:
                     throw new ArgumentException("Unknown payload type", nameof(payload));
             }
@@ -162,6 +186,12 @@ namespace TDCR.CoreLib.Network
                     break;
                 case HelloAck p:
                     RecvHelloAck?.Invoke(cont.Sender, p, this);
+                    break;
+                case GetPeers p:
+                    RecvGetPeers?.Invoke(cont.Sender, p, this);
+                    break;
+                case PeerList p:
+                    RecvPeerList?.Invoke(cont.Sender, p, this);
                     break;
                 default:
                     throw new ArgumentException("Unknown payload type", nameof(cont.Payload));
@@ -181,6 +211,12 @@ namespace TDCR.CoreLib.Network
                     break;
                 case HelloAck p:
                     RecvRawHelloAck?.Invoke(addr, p, this);
+                    break;
+                case GetPeers p:
+                    RecvRawGetPeers?.Invoke(addr, p, this);
+                    break;
+                case PeerList p:
+                    RecvRawPeerList?.Invoke(addr, p, this);
                     break;
                 default:
                     throw new ArgumentException("Unknown payload type", nameof(cont.Payload));

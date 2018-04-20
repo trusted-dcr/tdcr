@@ -13,6 +13,7 @@ using TDCR.Daemon.Wire;
 using static TDCR.Daemon.Wire.Api;
 using Google.Protobuf.WellKnownTypes;
 using TDCR.CoreLib.Database;
+using TDCR.CoreLib.Routine;
 
 namespace TDCR.Daemon
 {
@@ -29,6 +30,10 @@ namespace TDCR.Daemon
                 Part2 = 456
             };
             router = new Router(routerPort, uid, LogManager.GetLogger(nameof(Router)));
+
+            Addr[] peers = PeerStore.Instance.ReadAllPeers();
+            Discovery discovery = new Discovery(peers);
+            discovery.Attach(router, LogManager.GetLogger(nameof(Discovery)));
 
             server = new Server
             {

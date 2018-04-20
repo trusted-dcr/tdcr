@@ -15,10 +15,16 @@ namespace TDCR.CoreLib.Messages.Network
             switch (Payload)
             {
                 case Hello _:
-                    type = Wire.Network.Container.Types.PayloadType.HelloMsg;
+                    type = Wire.Network.Container.Types.PayloadType.Hello;
                     break;
                 case HelloAck _:
                     type = Wire.Network.Container.Types.PayloadType.HelloAck;
+                    break;
+                case GetPeers _:
+                    type = Wire.Network.Container.Types.PayloadType.GetPeers;
+                    break;
+                case PeerList _:
+                    type = Wire.Network.Container.Types.PayloadType.PeerList;
                     break;
                 default:
                     throw new InvalidOperationException("Unknown payload type");
@@ -37,11 +43,17 @@ namespace TDCR.CoreLib.Messages.Network
             IPayload<IMessage> payload;
             switch (wire.Type)
             {
-                case Wire.Network.Container.Types.PayloadType.HelloMsg:
+                case Wire.Network.Container.Types.PayloadType.Hello:
                     payload = Hello.FromWire(Wire.Discovery.HelloMsg.Parser.ParseFrom(wire.Payload));
                     break;
                 case Wire.Network.Container.Types.PayloadType.HelloAck:
                     payload = HelloAck.FromWire(Wire.Discovery.HelloAck.Parser.ParseFrom(wire.Payload));
+                    break;
+                case Wire.Network.Container.Types.PayloadType.GetPeers:
+                    payload = GetPeers.FromWire(Wire.Discovery.GetPeers.Parser.ParseFrom(wire.Payload));
+                    break;
+                case Wire.Network.Container.Types.PayloadType.PeerList:
+                    payload = PeerList.FromWire(Wire.Discovery.PeerList.Parser.ParseFrom(wire.Payload));
                     break;
                 default:
                     throw new ArgumentException("Unknown wire payload type", nameof(wire.Type));

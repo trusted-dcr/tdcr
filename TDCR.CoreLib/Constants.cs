@@ -10,5 +10,6 @@ namespace TDCR.CoreLib
 
         public const uint Version = 1;
         public static string DataDir = Path.Combine(systemDataDir, "tdcr");
+        public const uint GetPeerAmount = 100;
     }
 }

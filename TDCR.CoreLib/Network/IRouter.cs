@@ -19,15 +19,23 @@ namespace TDCR.CoreLib.Network
 
         event RecvHandler<Hello> RecvHello;
         event RecvHandler<HelloAck> RecvHelloAck;
+        event RecvHandler<GetPeers> RecvGetPeers;
+        event RecvHandler<PeerList> RecvPeerList;
 
         event RecvRawHandler<Hello> RecvRawHello;
         event RecvRawHandler<HelloAck> RecvRawHelloAck;
+        event RecvRawHandler<GetPeers> RecvRawGetPeers;
+        event RecvRawHandler<PeerList> RecvRawPeerList;
 
         // SentHello is missing on purpose - target UID would be unknown
         event SentHandler<HelloAck> SentHelloAck;
+        event SentHandler<GetPeers> SentGetPeers;
+        event SentHandler<PeerList> SentPeerList;
 
         event SentRawHandler<Hello> SentRawHello;
         event SentRawHandler<HelloAck> SentRawHelloAck;
+        event SentRawHandler<GetPeers> SentRawGetPeers;
+        event SentRawHandler<PeerList> SentRawPeerList;
 
         Uid OwnUid { get; }
 
