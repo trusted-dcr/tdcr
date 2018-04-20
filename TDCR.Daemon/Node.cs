@@ -12,6 +12,7 @@ using TDCR.CoreLib.Wire.Discovery;
 using TDCR.Daemon.Wire;
 using static TDCR.Daemon.Wire.Api;
 using Google.Protobuf.WellKnownTypes;
+using TDCR.CoreLib.Database;
 
 namespace TDCR.Daemon
 {
@@ -48,7 +49,7 @@ namespace TDCR.Daemon
             IPAddress ip = new IPAddress(addr.Ip.ToByteArray());
             ushort port = (ushort)addr.Port;
             logger.Info($"Exec ConnectTo({ip}, {port})");
-            router.Connect(new CoreLib.Messages.Network.Addr(new IPEndPoint(ip, port)));
+            router.Connect(new Addr(new IPEndPoint(ip, port)));
             return new Empty();
         }
 
@@ -56,6 +57,26 @@ namespace TDCR.Daemon
         {
             logger.Info("Got call to stop ({peer})", context.Peer);
             Environment.Exit(0);
+            return Task.FromResult(new Empty());
+        }
+
+        public override async Task GetPeers(Empty request, IServerStreamWriter<CoreLib.Wire.Network.Addr> responseStream, ServerCallContext context)
+        {
+            Addr[] peers = PeerStore.Instance.ReadAllPeers();
+            foreach (var peer in peers)
+                await responseStream.WriteAsync(peer.ToWire());
+        }
+
+        public override Task<Empty> AddPeer(CoreLib.Wire.Network.Addr request, ServerCallContext context)
+        {
+            Addr peer = Addr.FromWire(request);
+            PeerStore.Instance.AppendPeers(new[] { peer });
+            return Task.FromResult(new Empty());
+        }
+
+        public override Task<Empty> TruncatePeers(Empty request, ServerCallContext context)
+        {
+            PeerStore.Instance.Truncate();
             return Task.FromResult(new Empty());
         }
     }

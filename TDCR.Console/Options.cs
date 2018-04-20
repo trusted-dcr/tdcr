@@ -24,6 +24,16 @@ namespace TDCR.Console
     {
     }
 
+    [Verb("peers", HelpText = "List peers in the peer database.")]
+    public class PeersOptions : RpcOptions
+    {
+        [Option('a', "add-peer", HelpText = "Add peer to peer database.")]
+        public string AddPeer { get; set; }
+
+        [Option("truncate", HelpText = "Truncate the peer database.")]
+        public bool Truncate { get; set; }
+    }
+
     [Verb("exec", HelpText = "Forcefully execute commands on daemon.")]
     public class ExecOptions : RpcOptions
     {

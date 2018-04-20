@@ -15,8 +15,11 @@ service Api {
   rpc Stop (google.protobuf.Empty) returns (google.protobuf.Empty);
   rpc Version (google.protobuf.Empty) returns (SemVer);
 
+  rpc GetPeers (google.protobuf.Empty) returns (stream tdcr.corelib.network.Addr);
   rpc AddPeer (tdcr.corelib.network.Addr) returns (google.protobuf.Empty);
   rpc RemovePeer (tdcr.corelib.network.Addr) returns (google.protobuf.Empty);
+  rpc TruncatePeers (google.protobuf.Empty) returns (google.protobuf.Empty);
+
   rpc ConnectTo (tdcr.corelib.network.Addr) returns (google.protobuf.Empty);
   rpc DisconnectFrom (tdcr.corelib.network.Addr) returns (google.protobuf.Empty);
 }
