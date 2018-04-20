@@ -280,7 +280,7 @@ namespace TDCR.CoreLib.Network
             new Task(() =>
             {
                 while (conn.Connected)
-                    Receive(conn);
+                    Accept(Receive(conn));
                 Disconnected?.Invoke(peer, addr, this);
             }, TaskCreationOptions.LongRunning).Start();
         }
