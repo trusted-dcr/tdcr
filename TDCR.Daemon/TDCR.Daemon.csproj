@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="protoc^&#xD;&#xA;    --csharp_out=&quot;$(ProjectDir)Wire&quot;^&#xD;&#xA;    --grpc_out=&quot;$(ProjectDir)Wire&quot;^&#xD;&#xA;    --plugin=protoc-gen-grpc=&quot;%HOMEPATH%\.nuget\packages\grpc.tools\1.10.1\tools\windows_x64\grpc_csharp_plugin.exe&quot;^&#xD;&#xA;    --proto_path=&quot;$(ProjectDir)Wire\protos&quot;^&#xD;&#xA;    --proto_path=&quot;$(SolutionDir)TDCR.CoreLib\Wire\protos&quot;^&#xD;&#xA;    &quot;$(ProjectDir)Wire\protos\api.proto&quot;" />
+    <Exec Command="protoc^&#xD;&#xA;    --csharp_out=&quot;$(ProjectDir)Wire&quot;^&#xD;&#xA;    --grpc_out=&quot;$(ProjectDir)Wire&quot;^&#xD;&#xA;    --plugin=protoc-gen-grpc=&quot;%HOMEPATH%\.nuget\packages\grpc.tools\1.10.1\tools\windows_x64\grpc_csharp_plugin.exe&quot;^&#xD;&#xA;    --proto_path=&quot;$(ProjectDir)Wire\protos&quot;^&#xD;&#xA;    --proto_path=&quot;$(SolutionDir)tdcr-proto\protos&quot;^&#xD;&#xA;    &quot;$(ProjectDir)Wire\protos\api.proto&quot;" />
   </Target>
 
 </Project>

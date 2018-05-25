@@ -15,7 +15,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TDCR.CoreLib\TDCR.CoreLib.csproj" />
-    <ProjectReference Include="..\TDCR.Daemon\TDCR.Daemon.csproj" />
   </ItemGroup>
 
 </Project>

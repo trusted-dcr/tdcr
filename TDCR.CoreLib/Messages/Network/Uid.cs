@@ -1,5 +1,4 @@
-﻿using Google.Protobuf;
-using System;
+﻿using System;
 using System.Diagnostics;
 
 namespace TDCR.CoreLib.Messages.Network
@@ -13,17 +12,17 @@ namespace TDCR.CoreLib.Messages.Network
         {
             return new Wire.Network.Uid
             {
-                Data = ByteString.CopyFrom(PackLongs(Part1, Part2))
+                Part1 = Part1,
+                Part2 = Part2
             };
         }
 
         public static Uid FromWire(Wire.Network.Uid wire)
         {
-            byte[] bytes = wire.Data.ToByteArray();
             return new Uid
             {
-                Part1 = UnpackLong(bytes, 0),
-                Part2 = UnpackLong(bytes, 8)
+                Part1 = wire.Part1,
+                Part2 = wire.Part2
             };
         }
 

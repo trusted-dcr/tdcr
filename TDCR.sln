@@ -5,11 +5,9 @@ VisualStudioVersion = 15.0.27130.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TDCR.CoreLib", "TDCR.CoreLib\TDCR.CoreLib.csproj", "{A1341970-ABD7-4F3E-96D5-BC07EBD5D823}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TDCR.Daemon", "TDCR.Daemon\TDCR.Daemon.csproj", "{4D889760-DEDF-44FA-94ED-69A7AEF884E1}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TDCR.Console", "TDCR.Console\TDCR.Console.csproj", "{8ABFB9EE-F1DC-422E-BD26-8886FF42A448}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TDCR.CoreLib.Tests", "TDCR.CoreLib.Tests\TDCR.CoreLib.Tests.csproj", "{407A3F96-C531-443D-A075-7462B374E96E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TDCR.CoreLib.Tests", "TDCR.CoreLib.Tests\TDCR.CoreLib.Tests.csproj", "{407A3F96-C531-443D-A075-7462B374E96E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,10 +19,6 @@ Global
 		{A1341970-ABD7-4F3E-96D5-BC07EBD5D823}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1341970-ABD7-4F3E-96D5-BC07EBD5D823}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1341970-ABD7-4F3E-96D5-BC07EBD5D823}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4D889760-DEDF-44FA-94ED-69A7AEF884E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4D889760-DEDF-44FA-94ED-69A7AEF884E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4D889760-DEDF-44FA-94ED-69A7AEF884E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4D889760-DEDF-44FA-94ED-69A7AEF884E1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8ABFB9EE-F1DC-422E-BD26-8886FF42A448}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8ABFB9EE-F1DC-422E-BD26-8886FF42A448}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8ABFB9EE-F1DC-422E-BD26-8886FF42A448}.Release|Any CPU.ActiveCfg = Release|Any CPU

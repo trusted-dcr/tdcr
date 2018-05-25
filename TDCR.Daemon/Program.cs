@@ -20,7 +20,7 @@ namespace TDCR.Daemon
             });
 
             logger.Error($"Attaching deamon to port {port} (rpc {rpcPort})");
-            Node node = new Node(port, rpcPort);
+            //Node node = new Node(port, rpcPort);
 
             //LogFactory lf = new LogFactory();
             //Logger rl = lf.GetLogger(nameof(Router));
