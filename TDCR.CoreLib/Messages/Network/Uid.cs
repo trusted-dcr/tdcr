@@ -77,5 +77,21 @@ namespace TDCR.CoreLib.Messages.Network
                 result |= (ulong)bytes[offset + i] << (i * 8);
             return result;
         }
+
+        public Uid()
+        {
+            var rand = new Random();
+            byte[] buf = new byte[8];
+            rand.NextBytes(buf);
+            Part1 = BitConverter.ToUInt64(buf, 0);
+            rand.NextBytes(buf);
+            Part2 = BitConverter.ToUInt64(buf, 0);
+        }
+
+        public Uid(ulong p1, ulong p2)
+        {
+            Part1 = p1;
+            Part2 = p2;
+        }
     }
 }
