@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="protoc^&#xD;&#xA;    --proto_path=&quot;$(SolutionDir)tdcr-proto\protos&quot;^&#xD;&#xA;    --csharp_out=&quot;$(ProjectDir)Wire&quot;^&#xD;&#xA;    &quot;$(SolutionDir)tdcr-proto\protos\network.proto&quot;^&#xD;&#xA;    &quot;$(SolutionDir)tdcr-proto\protos\crypto.proto&quot;^&#xD;&#xA;    &quot;$(SolutionDir)tdcr-proto\protos\raft.proto&quot;" />
+    <Exec Command="mkdir $(ProjectDir)Wire;&#xD;&#xA;protoc^&#xD;&#xA;    --proto_path=&quot;$(SolutionDir)tdcr-proto\protos&quot;^&#xD;&#xA;    --csharp_out=&quot;$(ProjectDir)Wire&quot;^&#xD;&#xA;    &quot;$(SolutionDir)tdcr-proto\protos\network.proto&quot;^&#xD;&#xA;    &quot;$(SolutionDir)tdcr-proto\protos\crypto.proto&quot;^&#xD;&#xA;    &quot;$(SolutionDir)tdcr-proto\protos\raft.proto&quot;" />
   </Target>
 
 </Project>
