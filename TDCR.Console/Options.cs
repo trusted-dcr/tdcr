@@ -8,41 +8,34 @@ namespace TDCR.Console
     /// </summary>
     public abstract class RpcOptions
     {
-        [Option("rpc-port", HelpText = "Port used for RPC communication.", Default = Defaults.RpcPort)]
+        //[Option("rpc-port", HelpText = "Port used for RPC communication.", Default = Defaults.RpcPort)]
         public ushort RpcPort { get; set; }
     }
 
-    [Verb("start", HelpText = "Start a daemon process.")]
+    [Verb("start", HelpText = "Starts a daemon process.")]
     public class StartOptions : RpcOptions
     {
-        [Option('p', "port", HelpText = "Port used for inter-node communication.", Default = Defaults.Port)]
-        public ushort Port { get; set; }
+        [Option('c', "config", HelpText = "Load daemon process with config located at given path.")]
+        public string ConfigPath { get; set; }
+
+
+        //[Option('p', "port", HelpText = "Port used for inter-node communication.", Default = Defaults.Port)]
+        //public ushort Port { get; set; }
     }
 
     [Verb("stop", HelpText = "Stop a daemon process.")]
-    public class StopOptions : RpcOptions
+    public class StopOptions : RpcOptions { }
+
+    [Verb("execute", HelpText = "Forcefully execute commands on daemon.")]
+    public class ExecuteOptions : RpcOptions
     {
+
     }
 
-    [Verb("peers", HelpText = "List peers in the peer database.")]
-    public class PeersOptions : RpcOptions
-    {
-        [Option('a', "add-peer", HelpText = "Add peer to peer database.")]
-        public string AddPeer { get; set; }
+    [Verb("history", HelpText = "Collect the global history of the graph.")]
+    public class CollectGlobalHistoryOptions : RpcOptions { }
 
-        [Option("truncate", HelpText = "Truncate the peer database.")]
-        public bool Truncate { get; set; }
-    }
+    [Verb("log", HelpText = "Retrieve the log of the hosted event.")]
+    public class RetrieveLogOptions : RpcOptions { }
 
-    [Verb("exec", HelpText = "Forcefully execute commands on daemon.")]
-    public class ExecOptions : RpcOptions
-    {
-        public enum Command { ConnectTo }
-
-        [Value(0, MetaName = "cmd", HelpText = "Name of the command to be executed.")]
-        public Command Cmd { get; set; }
-
-        [Value(1, MetaName = "args", HelpText = "Command arguments.")]
-        public IEnumerable<string> Args { get; set; }
-    }
 }

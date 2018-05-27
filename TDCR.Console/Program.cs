@@ -1,15 +1,12 @@
 ﻿using CommandLine;
-using Google.Protobuf.WellKnownTypes;
-using Grpc.Core;
+using Newtonsoft.Json;
 using System;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Net;
+using System.Collections.Generic;
+using System.Text;
+using TDCR.CoreLib.HistoryCollection;
+using TDCR.CoreLib.Messages.Config;
 using TDCR.CoreLib.Messages.Network;
-using TDCR.Daemon;
-using TDCR.Daemon.Wire;
-using static TDCR.Daemon.Wire.Api;
+using TDCR.CoreLib.Messages.Raft;
 
 namespace TDCR.Console
 {
@@ -17,160 +14,71 @@ namespace TDCR.Console
     {
         public static void Main(string[] args)
         {
-            Parser.Default.ParseArguments<StartOptions, StopOptions, PeersOptions, ExecOptions>(args)
+            Parser.Default.ParseArguments<StartOptions, StopOptions, ExecuteOptions>(args)
                 .WithParsed((StartOptions opts) => Start(opts))
                 .WithParsed((StopOptions opts) => Stop(opts))
-                .WithParsed((PeersOptions opts) => Peers(opts))
-                .WithParsed((ExecOptions opts) => Exec(opts));
+                .WithParsed((ExecuteOptions opts) => Execute(opts))
+                .WithParsed((CollectGlobalHistoryOptions opts) => CollectGlobalHistory(opts))
+                .WithParsed((RetrieveLogOptions opts) => RetrieveLog(opts));
         }
 
         public static void Start(StartOptions opts)
         {
-            System.Console.Write("Starting daemon...");
-            Process daemon = new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    WorkingDirectory = Path.Combine(AppContext.BaseDirectory, Defaults.DaemonPath),
-                    FileName = "dotnet",
-                    Arguments = $"TDCR.Daemon.dll {opts.Port} {opts.RpcPort}",
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                }
-            };
-            try
-            {
-                daemon.Start();
-            }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine($"FAILED ({ex.Message})");
-                return;
-            }
-            System.Console.WriteLine("OK");
+            // Check for first time setup?
+            // Read JSON config
+            var input = System.IO.File.ReadAllText(opts.ConfigPath);
 
-            // Get daemon version
-            if (!TryConnectRpc(opts, out ApiClient client))
-                return;
-            SemVer version = client.Version(new Empty());
+            var graph = JsonConvert.DeserializeObject<Graph>(input);
 
-            System.Console.WriteLine($"port:     {opts.Port}");
-            System.Console.WriteLine($"rpc-port: {opts.RpcPort}");
-            System.Console.WriteLine($"version:  {version.GetVer()}");
+            // Start enclave?
         }
 
         public static void Stop(StopOptions opts)
         {
-            if (!TryConnectRpc(opts, out ApiClient client))
-                return;
-
-            System.Console.Write($"Stopping daemon...");
-            try
-            {
-                client.Stop(new Empty());
-                System.Console.WriteLine("OK");
-            }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine($"FAILED ({ex.Message})");
-            }
+            // Stop enclave
         }
 
-        public static void Peers(PeersOptions opts)
+        public static void Execute(ExecuteOptions opts)
         {
-            if (!TryConnectRpc(opts, out ApiClient client))
-                return;
-
-            // Add peer to db
-            if (opts.AddPeer != null)
-            {
-                string[] split = opts.AddPeer.Split(':');
-                if (split.Length != 2 || !IPAddress.TryParse(split[0], out IPAddress ip) || !ushort.TryParse(split[1], out ushort port))
-                {
-                    System.Console.WriteLine("Invalid IP format");
-                    return;
-                }
-
-                Addr peer = new Addr
-                {
-                    IP = ip,
-                    Port = port
-                };
-                System.Console.Write($"Adding {peer} to database...");
-                try
-                {
-                    client.AddPeer(peer.ToWire());
-                }
-                catch (Exception ex)
-                {
-                    System.Console.WriteLine($"FAILED ({ex.Message})");
-                    return;
-                }
-                System.Console.WriteLine("OK");
-                return;
-            }
-
-            if (opts.Truncate)
-            {
-                System.Console.Write("Truncating peer database...");
-                try
-                {
-                    client.TruncatePeers(new Empty());
-                }
-                catch (Exception ex)
-                {
-                    System.Console.WriteLine($"FAILED ({ex.Message})");
-                    return;
-                }
-                System.Console.WriteLine("OK");
-                return;
-            }
-
-            // List peers
-            IAsyncStreamReader<CoreLib.Wire.Network.Addr> peers = client.GetPeers(new Empty()).ResponseStream;
-            while (peers.MoveNext(default).Result)
-            {
-                CoreLib.Wire.Network.Addr wire = peers.Current;
-                Addr peer = Addr.FromWire(wire);
-                System.Console.WriteLine($"{peer}");
-            };
+            // TODO: Enclave call with auth.
         }
 
-        public static void Exec(ExecOptions opts)
+        public static void CollectGlobalHistory(CollectGlobalHistoryOptions opts)
         {
-            if (!TryConnectRpc(opts, out ApiClient client))
-                return;
+            System.Console.WriteLine("Collecting history...");
 
-            string[] args = opts.Args.ToArray();
-            switch (opts.Cmd)
+            // TODO: Enclave call
+            var result = new List<Tuple<Uid, Entry[]>>();
+
+            var cs = new CheapShot(result);
+
+            var historySB = new StringBuilder("Global history: (");
+            for (int i = 0; i < cs.GlobalHistory.Length; i++)
             {
-                case ExecOptions.Command.ConnectTo:
-                    if (args.Length != 2 || !IPAddress.TryParse(args[0], out IPAddress ip) || !ushort.TryParse(args[1], out ushort port))
-                    {
-                        System.Console.WriteLine("Invalid command arguments");
-                        return;
-                    }
+                // TODO: Look-up human names
+                var name = cs.GlobalHistory[i].Event + "_" + cs.GlobalHistory[i].ExecutionID;
 
-                    client.ConnectTo(new CoreLib.Messages.Network.Addr { IP = ip, Port = port }.ToWire());
-                    break;
+                historySB.Append(name);
+                if (i + 1 < cs.GlobalHistory.Length)
+                    historySB.Append(", ");
             }
+            historySB.Append(")");
+
+            System.Console.WriteLine(historySB.ToString());
         }
 
-        private static bool TryConnectRpc(RpcOptions opts, out ApiClient client)
+        public static void RetrieveLog(RetrieveLogOptions opts)
         {
-            System.Console.Write($"Connecting to daemon (localhost:{opts.RpcPort})...");
-            try
+            System.Console.WriteLine("Retrieving log...");
+
+            // TODO: Enclave call
+            var log = new string[] { "" };
+            foreach (var e in log)
             {
-                client = new ApiClient(new Grpc.Core.Channel("localhost", opts.RpcPort, Grpc.Core.ChannelCredentials.Insecure));
-                System.Console.WriteLine("OK");
-                return true;
+                System.Console.WriteLine(e);
             }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine($"FAILED ({ex.Message})");
-                client = null;
-                return false;
-            }
+
+            System.Console.WriteLine("End of log");
         }
     }
 }
