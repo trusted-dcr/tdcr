@@ -76,8 +76,6 @@ namespace TDCR.CoreLib.Tests
         [Test]
         public void AllInvalidConsistentCutTest()
         {
-            AllInvalid.CarveConsistentCut();
-
             Assert.False(AllInvalid.Observed[0].Item2[0].Valid);
             Assert.False(AllInvalid.Observed[0].Item2[1].Valid);
             Assert.False(AllInvalid.Observed[1].Item2[0].Valid);
@@ -89,26 +87,18 @@ namespace TDCR.CoreLib.Tests
         [Test]
         public void AllInvalidBuildGraphTest()
         {
-            AllInvalid.CarveConsistentCut();
-            AllInvalid.BuildGraph();
-            var graph = AllInvalid.Graph;
-
-            Assert.AreEqual(graph.Keys.Count, 0);
+            Assert.AreEqual(AllInvalid.Graph.Keys.Count, 0);
         }
 
         [Test]
         public void AllInvalidTopOrdering()
         {
-            AllInvalid.CollectHistory();
-
             Assert.AreEqual(AllInvalid.GlobalHistory.Length, 0);
         }
 
         [Test]
         public void AllValidConsistentCutTest()
         {
-            AllValid.CarveConsistentCut();
-
             Assert.That(AllValid.Observed[0].Item2[0].Valid);
             Assert.That(AllValid.Observed[0].Item2[1].Valid);
             Assert.That(AllValid.Observed[1].Item2[0].Valid);
@@ -121,9 +111,6 @@ namespace TDCR.CoreLib.Tests
         [Test]
         public void AllValidBuildGraphTest()
         {
-            AllValid.CarveConsistentCut();
-            AllValid.BuildGraph();
-
             AllValid.Graph.TryGetValue(eea, out HashSet<EventExecution> nodeA);
             AllValid.Graph.TryGetValue(eeb, out HashSet<EventExecution> nodeB);
             AllValid.Graph.TryGetValue(eec, out HashSet<EventExecution> nodeC);
@@ -142,8 +129,6 @@ namespace TDCR.CoreLib.Tests
         [Test]
         public void AllValidTopOrdering()
         {
-            AllValid.CollectHistory();
-
             var executionHistory = new EventExecution[] {
                 new EventExecution(exD.Event, exD.Tag.Uid),
                 new EventExecution(exC.Event, exC.Tag.Uid),
@@ -160,8 +145,6 @@ namespace TDCR.CoreLib.Tests
         [Test]
         public void PartiallyValidConsistentCutTest()
         {
-            PartiallyValid.CarveConsistentCut();
-
             Assert.That(PartiallyValid.Observed[0].Item2[0].Valid);
             Assert.That(PartiallyValid.Observed[0].Item2[1].Valid);
             Assert.That(PartiallyValid.Observed[1].Item2[0].Valid);
@@ -173,9 +156,6 @@ namespace TDCR.CoreLib.Tests
         [Test]
         public void PartiallyValidBuildGraphTest()
         {
-            PartiallyValid.CarveConsistentCut();
-            PartiallyValid.BuildGraph();
-
             PartiallyValid.Graph.TryGetValue(eea, out HashSet<EventExecution> nodeA);
             PartiallyValid.Graph.TryGetValue(eeb, out HashSet<EventExecution> nodeB);
             PartiallyValid.Graph.TryGetValue(eec, out HashSet<EventExecution> nodeC);
@@ -189,8 +169,6 @@ namespace TDCR.CoreLib.Tests
         [Test]
         public void PartiallyValidTopOrdering()
         {
-            PartiallyValid.CollectHistory();
-
             var executionHistory = new EventExecution[] {
                 new EventExecution(exA.Event, exA.Tag.Uid),
                 new EventExecution(exB.Event, exB.Tag.Uid),
@@ -205,8 +183,6 @@ namespace TDCR.CoreLib.Tests
         [Test]
         public void SingleEventMultipleExecutionsConsistentCutTest()
         {
-            SingleEventMultipleExecutions.CarveConsistentCut();
-
             Assert.That(SingleEventMultipleExecutions.Observed[0].Item2[0].Valid);
             Assert.That(SingleEventMultipleExecutions.Observed[0].Item2[1].Valid);
             Assert.That(SingleEventMultipleExecutions.Observed[0].Item2[2].Valid);
@@ -215,9 +191,6 @@ namespace TDCR.CoreLib.Tests
         [Test]
         public void SingleEventMultipleExecutionBuildGraphTest()
         {
-            SingleEventMultipleExecutions.CarveConsistentCut();
-            SingleEventMultipleExecutions.BuildGraph();
-
             SingleEventMultipleExecutions.Graph.TryGetValue(eea, out HashSet<EventExecution> nodeA);
             SingleEventMultipleExecutions.Graph.TryGetValue(eea1, out HashSet<EventExecution> nodeA1);
             SingleEventMultipleExecutions.Graph.TryGetValue(eea2, out HashSet<EventExecution> nodeA2);
@@ -231,8 +204,6 @@ namespace TDCR.CoreLib.Tests
         [Test]
         public void SingleEventMultipleExecutionsTopOrdering()
         {
-            SingleEventMultipleExecutions.CollectHistory();
-
             var executionHistory = new EventExecution[] {
                 new EventExecution(exA.Event, exA.Tag.Uid),
                 new EventExecution(exA.Event, exA1.Tag.Uid),
@@ -248,8 +219,6 @@ namespace TDCR.CoreLib.Tests
         [Test]
         public void BranchingConsistenCutTest()
         {
-            Branching.CarveConsistentCut();
-
             for (int i = 0; i < Branching.Observed.Length; i++)
                 for (int j = 0; j < Branching.Observed[i].Item2.Length; j++)
                     Assert.That(Branching.Observed[i].Item2[j].Valid);
@@ -258,9 +227,6 @@ namespace TDCR.CoreLib.Tests
         [Test]
         public void BranchingBuildGraphTest()
         {
-            Branching.CarveConsistentCut();
-            Branching.BuildGraph();
-            
             Branching.Graph.TryGetValue(eea, out HashSet<EventExecution> nodeA);
             Branching.Graph.TryGetValue(eeb, out HashSet<EventExecution> nodeB);
             Branching.Graph.TryGetValue(eec, out HashSet<EventExecution> nodeC);
@@ -283,8 +249,6 @@ namespace TDCR.CoreLib.Tests
         [Test]
         public void BranchingTopOrderingTest()
         {
-            Branching.CollectHistory();
-
             var executionHistory1 = new EventExecution[]
             {
                 eea, eeb, eec, eed, eee
@@ -308,8 +272,6 @@ namespace TDCR.CoreLib.Tests
         [Test]
         public void CycleConsistenCutTest()
         {
-            Cycle.CarveConsistentCut();
-
             for (int i = 0; i < Cycle.Observed.Length; i++)
                 for (int j = 0; j < Cycle.Observed[i].Item2.Length; j++)
                     Assert.That(Cycle.Observed[i].Item2[j].Valid);
@@ -318,9 +280,6 @@ namespace TDCR.CoreLib.Tests
         [Test]
         public void CycleBuildGraphTest()
         {
-            Cycle.CarveConsistentCut();
-            Cycle.BuildGraph();
-            
             Cycle.Graph.TryGetValue(eea, out HashSet<EventExecution> nodeA);
             Cycle.Graph.TryGetValue(eeb, out HashSet<EventExecution> nodeB);
             Cycle.Graph.TryGetValue(eec, out HashSet<EventExecution> nodeC);
@@ -339,8 +298,6 @@ namespace TDCR.CoreLib.Tests
         [Test]
         public void CycleTopOrderingTest()
         {
-            Cycle.CollectHistory();
-
             Assert.AreEqual(Cycle.GlobalHistory.Length, 3);
             Assert.AreEqual(Cycle.GlobalHistory.Distinct().Count(), 3);
             Assert.That(Cycle.GlobalHistory.Contains(eea));

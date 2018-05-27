@@ -10,8 +10,8 @@ namespace TDCR.CoreLib.HistoryCollection
     public class CheapShot
     {
         public Tuple<Uid, EventExecution[]>[] Observed { get; private set; }
-        public Dictionary<EventExecution, HashSet<EventExecution>> Graph { get; set; }
-        public EventExecution[] GlobalHistory { get; set; }
+        public Dictionary<EventExecution, HashSet<EventExecution>> Graph { get; private set; }
+        public EventExecution[] GlobalHistory { get; private set; }
         
         private Dictionary<Uid, HashSet<EventExecution>> EventToExecutions { get; set; }
         private Dictionary<EventExecution, List<Tuple<Uid, int>>> ExecutionsToEvents { get; set; }
@@ -31,7 +31,7 @@ namespace TDCR.CoreLib.HistoryCollection
             }
         }
 
-        public void CarveConsistentCut()
+        private void CarveConsistentCut()
         {
             foreach (var ev in Observed)
                 foreach (var ex in ev.Item2)
@@ -46,7 +46,7 @@ namespace TDCR.CoreLib.HistoryCollection
                 }
         }
 
-        public void GetCycleTopologicalOrdering()
+        private void GetCycleTopologicalOrdering()
         {
             var history = new EventExecution[Graph.Keys.Count];
             var idx = Graph.Keys.Count;
@@ -88,7 +88,7 @@ namespace TDCR.CoreLib.HistoryCollection
             GlobalHistory = history;
         }
 
-        public void BuildGraph()
+        private void BuildGraph()
         {
             var graph = new Dictionary<EventExecution, HashSet<EventExecution>>();
 
@@ -161,10 +161,8 @@ namespace TDCR.CoreLib.HistoryCollection
                     }
                 }
             }
-        }
 
-        public EventExecution[] CollectHistory()
-        {
+            // Run the Algorithm
             // Consistent cut
             CarveConsistentCut();
 
@@ -173,8 +171,6 @@ namespace TDCR.CoreLib.HistoryCollection
 
             // Modified topsort
             GetCycleTopologicalOrdering();
-            
-            return GlobalHistory;
         }
     }
 }
