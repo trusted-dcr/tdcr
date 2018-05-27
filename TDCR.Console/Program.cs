@@ -28,7 +28,7 @@ namespace TDCR.Console
             // Read JSON config
             var input = System.IO.File.ReadAllText(opts.ConfigPath);
 
-            var graph = JsonConvert.DeserializeObject<Graph>(input);
+            var graph = JsonConvert.DeserializeObject<CoreLib.Wire.Dcr.Workflow>(input);
 
             // Start enclave?
         }
