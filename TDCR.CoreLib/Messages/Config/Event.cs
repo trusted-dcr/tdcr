@@ -10,8 +10,6 @@ namespace TDCR.CoreLib.Messages.Config
         public Uid UID { get; set; }
         public string Name { get; set; }
 
-        public Peer[] Cluster { get; set; }
-
         public bool Executed { get; set; }
         public bool Included { get; set; }
         public bool Pending { get; set; }
