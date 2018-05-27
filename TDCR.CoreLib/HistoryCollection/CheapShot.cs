@@ -10,7 +10,7 @@ namespace TDCR.CoreLib.HistoryCollection
     public class CheapShot
     {
         public Tuple<Uid, EventExecution[]>[] Observed { get; private set; }
-        public Dictionary<EventExecution, List<EventExecution>> Graph { get; set; }
+        public Dictionary<EventExecution, HashSet<EventExecution>> Graph { get; set; }
         public EventExecution[] GlobalHistory { get; set; }
         
         private Dictionary<Uid, HashSet<EventExecution>> EventToExecutions { get; set; }
@@ -49,7 +49,7 @@ namespace TDCR.CoreLib.HistoryCollection
         public void GetCycleTopologicalOrdering()
         {
             var history = new EventExecution[Graph.Keys.Count];
-            var idx = Graph.Keys.Count-1;
+            var idx = Graph.Keys.Count;
             
             var traversal = new Stack<EventExecution>();
 
@@ -65,7 +65,7 @@ namespace TDCR.CoreLib.HistoryCollection
                     node.Marked = true;
                     
                     // If unmarked child, traverse
-                    Graph.TryGetValue(node, out List<EventExecution> neighbours);
+                    Graph.TryGetValue(node, out HashSet<EventExecution> neighbours);
                     foreach (var c in neighbours)
                         if (!c.Marked)
                         {
@@ -77,7 +77,7 @@ namespace TDCR.CoreLib.HistoryCollection
                     if (!node.Marked) continue; // Found new child. Continue traversal from it.
 
                     // Else add to result
-                    history[idx--] = node;
+                    history[--idx] = node;
 
                     //Backtrack if able
                     if (traversal.Count == 0) break;
@@ -90,7 +90,7 @@ namespace TDCR.CoreLib.HistoryCollection
 
         public void BuildGraph()
         {
-            var graph = new Dictionary<EventExecution, List<EventExecution>>();
+            var graph = new Dictionary<EventExecution, HashSet<EventExecution>>();
 
             foreach (var ev in Observed)
                 for (int j = 0; j < ev.Item2.Length; j++)
@@ -100,12 +100,12 @@ namespace TDCR.CoreLib.HistoryCollection
 
                     // If execution not already in map, add it
                     if (!graph.ContainsKey(ev.Item2[j]))
-                        graph.Add(ev.Item2[j], new List<EventExecution>());
+                        graph.Add(ev.Item2[j], new HashSet<EventExecution>());
 
                     // If next is valid, add as target
                     if (j + 1 >= ev.Item2.Length || !ev.Item2[j + 1].Valid) break;
 
-                    graph.TryGetValue(ev.Item2[j], out List<EventExecution> val);
+                    graph.TryGetValue(ev.Item2[j], out HashSet<EventExecution> val);
                     val.Add(ev.Item2[j + 1]);
                 }
 
@@ -114,11 +114,31 @@ namespace TDCR.CoreLib.HistoryCollection
 
         public CheapShot(List<Tuple<Uid, Entry[]>> obs)
         {
+            int createdElements = 0;
+
             // array af event -> event execution array
+            var seenExecutions = new HashSet<EventExecution>(); // Prevent duplicate executions from being created.
             Observed = new Tuple<Uid, EventExecution[]>[obs.Count];
             for (int i = 0; i < obs.Count; i++)
-                Observed[i] = new Tuple<Uid, EventExecution[]>(obs[i].Item1,
-                    obs[i].Item2.Select(entry => new EventExecution(entry.Event, entry.Tag.Uid)).ToArray());
+            {
+                Observed[i] = new Tuple<Uid, EventExecution[]>(obs[i].Item1, new EventExecution[obs[i].Item2.Length]);
+                for (int j = 0; j < obs[i].Item2.Length; j++)
+                {
+                    var evex = new EventExecution(obs[i].Item2[j].Event, obs[i].Item2[j].Tag.Uid);
+
+                    // Check if already exists. If it does, add existing instead
+                    if (seenExecutions.TryGetValue(evex, out EventExecution found))
+                    {
+                        Observed[i].Item2[j] = found;
+                        continue;
+                    }
+
+                    // Else save new
+                    seenExecutions.Add(evex);
+                    Observed[i].Item2[j] = evex;
+                    createdElements++;
+                }
+            }
 
             // Map of Event -> event execution set
             EventToExecutions = new Dictionary<Uid, HashSet<EventExecution>>();
