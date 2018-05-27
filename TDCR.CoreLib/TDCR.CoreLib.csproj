@@ -10,12 +10,14 @@
 
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.5.1" />
+    <PackageReference Include="Grpc" Version="1.12.0" />
+    <PackageReference Include="Grpc.Tools" Version="1.12.0" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="NLog" Version="4.5.2" />
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="mkdir $(ProjectDir)Wire;&#xD;&#xA;protoc^&#xD;&#xA;    --proto_path=&quot;$(SolutionDir)tdcr-proto\protos&quot;^&#xD;&#xA;    --csharp_out=&quot;$(ProjectDir)Wire&quot;^&#xD;&#xA;    &quot;$(SolutionDir)tdcr-proto\protos\network.proto&quot;^&#xD;&#xA;    &quot;$(SolutionDir)tdcr-proto\protos\crypto.proto&quot;^&#xD;&#xA;    &quot;$(SolutionDir)tdcr-proto\protos\raft.proto&quot;^&#xD;&#xA;    &quot;$(SolutionDir)tdcr-proto\protos\dcr.proto&quot;^&#xD;&#xA;    &quot;$(SolutionDir)tdcr-proto\protos\sgxd.proto&quot;" />
+    <Exec Command="mkdir $(ProjectDir)Wire;&#xD;&#xA;protoc^&#xD;&#xA;    --proto_path=&quot;$(SolutionDir)tdcr-proto\protos&quot;^&#xD;&#xA;    --plugin=protoc-gen-grpc=&quot;%HOMEPATH%\.nuget\packages\grpc.tools\1.12.0\tools\windows_x64\grpc_csharp_plugin.exe&quot;^&#xD;&#xA;    --csharp_out=&quot;$(ProjectDir)Wire&quot;^&#xD;&#xA;    --grpc_out=&quot;$(ProjectDir)Wire&quot;^&#xD;&#xA;    &quot;$(SolutionDir)tdcr-proto\protos\network.proto&quot;^&#xD;&#xA;    &quot;$(SolutionDir)tdcr-proto\protos\crypto.proto&quot;^&#xD;&#xA;    &quot;$(SolutionDir)tdcr-proto\protos\raft.proto&quot;^&#xD;&#xA;    &quot;$(SolutionDir)tdcr-proto\protos\dcr.proto&quot;^&#xD;&#xA;    &quot;$(SolutionDir)tdcr-proto\protos\sgxd.proto&quot;" />
   </Target>
 
 </Project>
