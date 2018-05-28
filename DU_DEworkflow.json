@@ -1,0 +1,196 @@
+{
+    "Peers": [
+        {
+            "Address": "0.0.0.0:0",
+            "Event": {
+                "Part1": 1,
+                "Part2": 0
+            },
+            "UID": {
+                "Part1": 6,
+                "Part2": 0
+            }
+        },
+        {
+            "Address": "0.0.0.0:0",
+            "Event": {
+                "Part1": 2,
+                "Part2": 0
+            },
+            "UID": {
+                "Part1": 7,
+                "Part2": 0
+            }
+        },
+        {
+            "Address": "0.0.0.0:0",
+            "Event": {
+                "Part1": 3,
+                "Part2": 0
+            },
+            "UID": {
+                "Part1": 8,
+                "Part2": 0
+            }
+        },
+        {
+            "Address": "0.0.0.0:0",
+            "Event": {
+                "Part1": 4,
+                "Part2": 0
+            },
+            "UID": {
+                "Part1": 9,
+                "Part2": 0
+            }
+        },
+        {
+            "Address": "0.0.0.0:0",
+            "Event": {
+                "Part1": 5,
+                "Part2": 0
+            },
+            "UID": {
+                "Part1": 10,
+                "Part2": 0
+            }
+        }
+    ],
+    "UID": {
+        "Part1": 0,
+        "Part2": 0
+    },
+    "Workflow": {
+        "Events": [
+            {
+                "ConditionRelations": [
+                    {
+                        "Part1": 2,
+                        "Part2": 0
+                    }
+                ],
+                "ExcludeRelations": [],
+                "Executed": false,
+                "IncludeRelations": [
+                    {
+                        "Part1": 4,
+                        "Part2": 0
+                    }
+                ],
+                "Included": true,
+                "MilestoneRelations": [],
+                "Name": "Propose_DU",
+                "Pending": false,
+                "PendingRelations": [
+                    {
+                        "Part1": 4,
+                        "Part2": 0
+                    }
+                ],
+                "UID": {
+                    "Part1": 1,
+                    "Part2": 0
+                }
+            },
+            {
+                "ConditionRelations": [],
+                "ExcludeRelations": [],
+                "Executed": false,
+                "IncludeRelations": [
+                    {
+                        "Part1": 3,
+                        "Part2": 0
+                    }
+                ],
+                "Included": true,
+                "MilestoneRelations": [],
+                "Name": "Propose_DE",
+                "Pending": false,
+                "PendingRelations": [
+                    {
+                        "Part1": 3,
+                        "Part2": 0
+                    }
+                ],
+                "UID": {
+                    "Part1": 2,
+                    "Part2": 0
+                }
+            },
+            {
+                "ConditionRelations": [],
+                "ExcludeRelations": [
+                    {
+                        "Part1": 3,
+                        "Part2": 0
+                    },
+                    {
+                        "Part1": 4,
+                        "Part2": 0
+                    }
+                ],
+                "Executed": false,
+                "IncludeRelations": [],
+                "Included": false,
+                "MilestoneRelations": [
+                    {
+                        "Part1": 5,
+                        "Part2": 0
+                    }
+                ],
+                "Name": "Accept_DU",
+                "Pending": false,
+                "PendingRelations": [],
+                "UID": {
+                    "Part1": 3,
+                    "Part2": 0
+                }
+            },
+            {
+                "ConditionRelations": [],
+                "ExcludeRelations": [
+                    {
+                        "Part1": 3,
+                        "Part2": 0
+                    },
+                    {
+                        "Part1": 4,
+                        "Part2": 0
+                    }
+                ],
+                "Executed": false,
+                "IncludeRelations": [],
+                "Included": false,
+                "MilestoneRelations": [
+                    {
+                        "Part1": 5,
+                        "Part2": 0
+                    }
+                ],
+                "Name": "Accept_DE",
+                "Pending": false,
+                "PendingRelations": [],
+                "UID": {
+                    "Part1": 4,
+                    "Part2": 0
+                }
+            },
+            {
+                "ConditionRelations": [],
+                "ExcludeRelations": [],
+                "Executed": false,
+                "IncludeRelations": [],
+                "Included": true,
+                "MilestoneRelations": [],
+                "Name": "Hold meeting",
+                "Pending": true,
+                "PendingRelations": [],
+                "UID": {
+                    "Part1": 5,
+                    "Part2": 0
+                }
+            }
+        ],
+        "Name": "DU_DE Workflow"
+    }
+}

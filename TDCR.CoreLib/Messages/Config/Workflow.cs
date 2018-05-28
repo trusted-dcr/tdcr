@@ -7,6 +7,8 @@ namespace TDCR.CoreLib.Messages.Config
 {
     public class Graph
     {
+        public string Name { get; set; }
+
         public Event[] Events { get; set; }
     }
 }

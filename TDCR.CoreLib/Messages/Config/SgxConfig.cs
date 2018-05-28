@@ -23,7 +23,10 @@ namespace TDCR.CoreLib.Messages.Config
             };
 
             foreach (var p in Peers)
-                conf.Peers.Add(new Wire.Sgx.SgxConfig.Types.Peer { Address = BitConverter.ToUInt32(p.Address.GetAddressBytes().Reverse().ToArray(), 0) });
+                conf.Peers.Add(new Wire.Sgx.SgxConfig.Types.Peer
+                {
+                    Address = BitConverter.ToUInt32(p.Address.GetAddressBytes().Reverse().ToArray(), 0)
+                });
 
             return conf;
         }

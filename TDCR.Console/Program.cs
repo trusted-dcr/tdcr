@@ -1,12 +1,17 @@
 ﻿using CommandLine;
+using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Text;
 using TDCR.CoreLib.HistoryCollection;
 using TDCR.CoreLib.Messages.Config;
 using TDCR.CoreLib.Messages.Network;
 using TDCR.CoreLib.Messages.Raft;
+using TDCR.CoreLib.Wire.Sgx;
 
 namespace TDCR.Console
 {
@@ -24,13 +29,42 @@ namespace TDCR.Console
 
         public static void Start(StartOptions opts)
         {
-            // Check for first time setup?
-            // Read JSON config
-            var input = System.IO.File.ReadAllText(opts.ConfigPath);
+            var input = File.ReadAllText(opts.ConfigPath);
+            var config = JsonConvert.DeserializeObject<CoreLib.Messages.Config.SgxConfig>(input);
 
-            var graph = JsonConvert.DeserializeObject<CoreLib.Wire.Dcr.Workflow>(input);
+            System.Console.Write("Starting daemon...");
 
-            // Start enclave?
+            Process daemon = new Process            
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    WorkingDirectory = Path.Combine(AppContext.BaseDirectory, Defaults.DaemonPath),
+                    FileName = "dotnet",
+                    Arguments = $"TDCR.Daemon.dll {opts.Port} {opts.RpcPort}",
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                }
+            };
+
+            try
+            {
+                daemon.Start();
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine($"FAILED ({ex.Message})");
+                return;
+            }
+            System.Console.WriteLine("OK");
+            
+            // Get daemon version
+            if (!TryConnectRpc(opts, out SgxDaemon.SgxDaemonClient client))
+                return;
+
+            client.Config(config.ToWire());
+
+            System.Console.WriteLine($"port:     {opts.Port}");
+            System.Console.WriteLine($"rpc-port: {opts.RpcPort}");
         }
 
         public static void Stop(StopOptions opts)
@@ -46,6 +80,8 @@ namespace TDCR.Console
         public static void CollectGlobalHistory(CollectGlobalHistoryOptions opts)
         {
             System.Console.WriteLine("Collecting history...");
+
+            TryConnectRpc(opts, out SgxDaemon.SgxDaemonClient client);
 
             // TODO: Enclave call
             var result = new List<Tuple<Uid, Entry[]>>();
@@ -79,6 +115,23 @@ namespace TDCR.Console
             }
 
             System.Console.WriteLine("End of log");
+        }
+
+        private static bool TryConnectRpc(RpcOptions opts, out CoreLib.Wire.Sgx.SgxDaemon.SgxDaemonClient client)
+        {
+            System.Console.Write($"Connecting to daemon (localhost:{opts.RpcPort})...");
+            try
+            {
+                client = new CoreLib.Wire.Sgx.SgxDaemon.SgxDaemonClient(new Grpc.Core.Channel("localhost", opts.RpcPort, Grpc.Core.ChannelCredentials.Insecure));
+                System.Console.WriteLine("OK");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine($"FAILED ({ex.Message})");
+                client = null;
+                return false;
+            }
         }
     }
 }
