@@ -8,7 +8,7 @@ namespace TDCR.Console
     /// </summary>
     public abstract class RpcOptions
     {
-        [Option("rpc-port", HelpText = "Port used for RPC communication.", Default = Defaults.RpcPort)]
+        [Option('p', "rpc-port", HelpText = "Port used for RPC communication.", Default = Defaults.RpcPort)]
         public ushort RpcPort { get; set; }
     }
 
@@ -17,9 +17,6 @@ namespace TDCR.Console
     {
         [Option('c', "config", HelpText = "Load daemon process with config located at given path.")]
         public string ConfigPath { get; set; }
-
-        [Option('p', "port", HelpText = "Port used for inter-node communication.", Default = Defaults.Port)]
-        public ushort Port { get; set; }
     }
 
     [Verb("stop", HelpText = "Stop a daemon process.")]

@@ -1,28 +1,22 @@
-﻿using System.Diagnostics;
+﻿using System;
 using System.Net;
 
 namespace TDCR.CoreLib.Messages.Network
 {
     public class Addr : IPayload<Wire.Network.Addr>
     {
-        public IPAddress IP { get; set; }
-        public ushort Port { get; set; }
-
-        public Addr() {}
-
-        public Addr(IPEndPoint ep)
-        {
-            Debug.Assert(ep.Port <= ushort.MaxValue);
-            IP = ep.Address;
-            Port = (ushort)ep.Port;
-        }
+        public IPEndPoint EndPoint { get; set; }
 
         public Wire.Network.Addr ToWire()
         {
+            byte[] ipPadded = new byte[8];
+            byte[] ipBytes = EndPoint.Address.GetAddressBytes();
+            Array.Copy(ipBytes, ipPadded, ipBytes.Length);
+
             return new Wire.Network.Addr
             {
-                Ip = Google.Protobuf.ByteString.CopyFrom(IP.GetAddressBytes()),
-                Port = Port
+                Ip = BinaryHelpers.UnpackUInt64(ipPadded),
+                Port = (ushort)EndPoint.Port
             };
         }
 
@@ -30,8 +24,9 @@ namespace TDCR.CoreLib.Messages.Network
         {
             return new Addr
             {
-                IP = new IPAddress(wire.Ip.ToByteArray()),
-                Port = (ushort)wire.Port
+                EndPoint = new IPEndPoint(
+                    new IPAddress(BinaryHelpers.PackUInt64(wire.Ip)),
+                    (ushort)wire.Port)
             };
         }
 
@@ -41,7 +36,8 @@ namespace TDCR.CoreLib.Messages.Network
                 return true;
             if (lhs is null || rhs is null)
                 return false;
-            return lhs.IP.Equals(rhs.IP) && lhs.Port == rhs.Port;
+            return lhs.EndPoint.Address.Equals(rhs.EndPoint.Address)
+                && lhs.EndPoint.Port == rhs.EndPoint.Port;
         }
 
         public static bool operator !=(Addr lhs, Addr rhs)
@@ -59,15 +55,12 @@ namespace TDCR.CoreLib.Messages.Network
 
         public override int GetHashCode()
         {
-            var hashCode = -910227966;
-            hashCode = hashCode * -1521134295 + IP.GetHashCode();
-            hashCode = hashCode * -1521134295 + Port.GetHashCode();
-            return hashCode;
+            return EndPoint.GetHashCode();
         }
 
         public override string ToString()
         {
-            return new IPEndPoint(IP, Port).ToString();
+            return EndPoint.ToString();
         }
     }
 }

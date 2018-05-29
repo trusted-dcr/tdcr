@@ -34,36 +34,35 @@ namespace TDCR.Console
 
             System.Console.Write("Starting daemon...");
 
-            Process daemon = new Process            
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    WorkingDirectory = Path.Combine(AppContext.BaseDirectory, Defaults.DaemonPath),
-                    FileName = "dotnet",
-                    Arguments = $"TDCR.Daemon.dll {opts.Port} {opts.RpcPort}",
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                }
-            };
+            //Process daemon = new Process
+            //{
+            //    StartInfo = new ProcessStartInfo
+            //    {
+            //        WorkingDirectory = Path.Combine(AppContext.BaseDirectory, Defaults.DaemonPath),
+            //        FileName = "dotnet",
+            //        Arguments = $"TDCR.Daemon.dll {opts.Port} {opts.RpcPort}",
+            //        UseShellExecute = false,
+            //        CreateNoWindow = true
+            //    }
+            //};
 
-            try
-            {
-                daemon.Start();
-            }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine($"FAILED ({ex.Message})");
-                return;
-            }
-            System.Console.WriteLine("OK");
-            
+            //try
+            //{
+            //    daemon.Start();
+            //}
+            //catch (Exception ex)
+            //{
+            //    System.Console.WriteLine($"FAILED ({ex.Message})");
+            //    return;
+            //}
+            //System.Console.WriteLine("OK");
+
             // Get daemon version
             if (!TryConnectRpc(opts, out SgxDaemon.SgxDaemonClient client))
                 return;
 
             client.Config(config.ToWire());
 
-            System.Console.WriteLine($"port:     {opts.Port}");
             System.Console.WriteLine($"rpc-port: {opts.RpcPort}");
         }
 

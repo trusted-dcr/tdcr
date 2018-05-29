@@ -12,8 +12,9 @@ namespace TDCR.CoreLib.Tests
         {
             Addr addr = new Addr
             {
-                IP = new IPAddress(new byte[] { 127, 0, 0, 1 }),
-                Port = 8888
+                EndPoint = new IPEndPoint(
+                    new IPAddress(new byte[] { 127, 0, 0, 1 }),
+                    8888)
             };
             Assert.That(Addr.FromWire(addr.ToWire()), Is.EqualTo(addr));
         }

@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Diagnostics;
+using System.Text;
 
 namespace TDCR.CoreLib.Messages.Network
 {
@@ -58,24 +60,20 @@ namespace TDCR.CoreLib.Messages.Network
 
         public override string ToString()
         {
-            return BitConverter.ToString(PackLongs(Part1, Part2));
+            return BitConverter.ToString(BinaryHelpers.PackUInt64(Part1, Part2));
         }
 
-        private static byte[] PackLongs(params ulong[] longs)
+        [JsonConstructor]
+        public Uid(string hex)
         {
-            byte[] result = new byte[longs.Length * 8];
-            for (int i = 0; i < longs.Length; i++)
-                Array.Copy(BitConverter.GetBytes(longs[i]), 0, result, i * 8, 8);
-            return result;
-        }
+            if (hex.Substring(0, 2) == "0x")
+                hex = hex.Substring(2);
 
-        private static ulong UnpackLong(byte[] bytes, int offset)
-        {
-            Debug.Assert(bytes.Length >= offset + 8);
-            ulong result = 0;
-            for (int i = 0; i < 8; i++)
-                result |= (ulong)bytes[offset + i] << (i * 8);
-            return result;
+            if (hex.Length != 16)
+                throw new ArgumentException("Expected 128 bit UID", nameof(hex));
+
+            Part1 = Convert.ToUInt64(hex.Substring(0, 8), 16);
+            Part2 = Convert.ToUInt64(hex.Substring(8, 8), 16);
         }
 
         public Uid()

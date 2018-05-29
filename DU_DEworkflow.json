@@ -1,196 +1,115 @@
 {
-    "Peers": [
+    "self": { "hex": "0x000000000000000B" },
+    "peers": [
         {
-            "Address": "0.0.0.0:0",
-            "Event": {
-                "Part1": 1,
-                "Part2": 0
-            },
-            "UID": {
-                "Part1": 6,
-                "Part2": 0
-            }
+            "addr": "1.2.3.4:5556",
+            "event": { "hex": "0x0000000000000001" },
+            "uid": { "hex": "0x0000000000000006" }
         },
         {
-            "Address": "0.0.0.0:0",
-            "Event": {
-                "Part1": 2,
-                "Part2": 0
-            },
-            "UID": {
-                "Part1": 7,
-                "Part2": 0
-            }
+            "addr": "255.255.25.255:6464",
+            "event": { "hex": "0x0000000000000002" },
+            "uid": { "hex": "0x0000000000000007" }
         },
         {
-            "Address": "0.0.0.0:0",
-            "Event": {
-                "Part1": 3,
-                "Part2": 0
-            },
-            "UID": {
-                "Part1": 8,
-                "Part2": 0
-            }
+            "addr": "123.234.231.165:80",
+            "event": { "hex": "0x0000000000000003" },
+            "uid": { "hex": "0x0000000000000008" }
         },
         {
-            "Address": "0.0.0.0:0",
-            "Event": {
-                "Part1": 4,
-                "Part2": 0
-            },
-            "UID": {
-                "Part1": 9,
-                "Part2": 0
-            }
+            "addr": "10.10.0.1:123",
+            "event": { "hex": "0x0000000000000004" },
+            "uid": { "hex": "0x0000000000000009" }
         },
         {
-            "Address": "0.0.0.0:0",
-            "Event": {
-                "Part1": 5,
-                "Part2": 0
-            },
-            "UID": {
-                "Part1": 10,
-                "Part2": 0
-            }
+            "addr": "192.0.0.10:20",
+            "event": { "hex": "0x0000000000000005" },
+            "uid": { "hex": "0x000000000000000A" }
         }
     ],
-    "UID": {
-        "Part1": 0,
-        "Part2": 0
-    },
-    "Workflow": {
-        "Events": [
+    "workflow": {
+        "events": [
             {
-                "ConditionRelations": [
-                    {
-                        "Part1": 2,
-                        "Part2": 0
-                    }
+                "conditionRelations": [
+                    { "hex": "0x0000000000000002" }
                 ],
-                "ExcludeRelations": [],
-                "Executed": false,
-                "IncludeRelations": [
-                    {
-                        "Part1": 4,
-                        "Part2": 0
-                    }
+                "excludeRelations": [],
+                "executed": false,
+                "includeRelations": [
+                    { "hex": "0x0000000000000004" }
                 ],
-                "Included": true,
-                "MilestoneRelations": [],
-                "Name": "Propose_DU",
-                "Pending": false,
-                "PendingRelations": [
-                    {
-                        "Part1": 4,
-                        "Part2": 0
-                    }
+                "excluded": false,
+                "milestoneRelations": [],
+                "name": "Propose_DU",
+                "pending": false,
+                "pendingRelations": [
+                    { "hex": "0x0000000000000004" }
                 ],
-                "UID": {
-                    "Part1": 1,
-                    "Part2": 0
-                }
+                "uid": { "hex": "0x0000000000000001" }
             },
             {
-                "ConditionRelations": [],
-                "ExcludeRelations": [],
-                "Executed": false,
-                "IncludeRelations": [
-                    {
-                        "Part1": 3,
-                        "Part2": 0
-                    }
+                "conditionRelations": [],
+                "excludeRelations": [],
+                "executed": false,
+                "includeRelations": [
+                    { "hex": "0x0000000000000003" }
                 ],
-                "Included": true,
-                "MilestoneRelations": [],
-                "Name": "Propose_DE",
-                "Pending": false,
-                "PendingRelations": [
-                    {
-                        "Part1": 3,
-                        "Part2": 0
-                    }
+                "excluded": false,
+                "milestoneRelations": [],
+                "name": "Propose_DE",
+                "pending": false,
+                "pendingRelations": [
+                    { "hex": "0x0000000000000003" }
                 ],
-                "UID": {
-                    "Part1": 2,
-                    "Part2": 0
-                }
+                "uid": { "hex": "0x0000000000000002" }
             },
             {
-                "ConditionRelations": [],
-                "ExcludeRelations": [
-                    {
-                        "Part1": 3,
-                        "Part2": 0
-                    },
-                    {
-                        "Part1": 4,
-                        "Part2": 0
-                    }
+                "conditionRelations": [],
+                "excludeRelations": [
+                    { "hex": "0x0000000000000003" },
+                    { "hex": "0x0000000000000004" }
                 ],
-                "Executed": false,
-                "IncludeRelations": [],
-                "Included": false,
-                "MilestoneRelations": [
-                    {
-                        "Part1": 5,
-                        "Part2": 0
-                    }
+                "executed": false,
+                "includeRelations": [],
+                "excluded": true,
+                "milestoneRelations": [
+                    { "hex": "0x0000000000000005" }
                 ],
-                "Name": "Accept_DU",
-                "Pending": false,
-                "PendingRelations": [],
-                "UID": {
-                    "Part1": 3,
-                    "Part2": 0
-                }
+                "name": "Accept_DU",
+                "pending": false,
+                "pendingRelations": [],
+                "uid": { "hex": "0x0000000000000003" }
             },
             {
-                "ConditionRelations": [],
-                "ExcludeRelations": [
-                    {
-                        "Part1": 3,
-                        "Part2": 0
-                    },
-                    {
-                        "Part1": 4,
-                        "Part2": 0
-                    }
+                "conditionRelations": [],
+                "excludeRelations": [
+                    { "hex": "0x0000000000000003" },
+                    { "hex": "0x0000000000000004" }
                 ],
-                "Executed": false,
-                "IncludeRelations": [],
-                "Included": false,
-                "MilestoneRelations": [
-                    {
-                        "Part1": 5,
-                        "Part2": 0
-                    }
+                "executed": false,
+                "includeRelations": [],
+                "excluded": true,
+                "milestoneRelations": [
+                    { "hex": "0x0000000000000005" }
                 ],
-                "Name": "Accept_DE",
-                "Pending": false,
-                "PendingRelations": [],
-                "UID": {
-                    "Part1": 4,
-                    "Part2": 0
-                }
+                "name": "Accept_DE",
+                "pending": false,
+                "pendingRelations": [],
+                "uid": { "hex": "0x0000000000000004" }
             },
             {
-                "ConditionRelations": [],
-                "ExcludeRelations": [],
-                "Executed": false,
-                "IncludeRelations": [],
-                "Included": true,
-                "MilestoneRelations": [],
-                "Name": "Hold meeting",
-                "Pending": true,
-                "PendingRelations": [],
-                "UID": {
-                    "Part1": 5,
-                    "Part2": 0
-                }
+                "conditionRelations": [],
+                "excludeRelations": [],
+                "executed": false,
+                "includeRelations": [],
+                "excluded": false,
+                "milestoneRelations": [],
+                "name": "Hold meeting",
+                "pending": true,
+                "pendingRelations": [],
+                "uid": { "hex": "0x0000000000000005" }
             }
         ],
-        "Name": "DU_DE Workflow"
+        "name": "DU_DE Workflow"
     }
 }
