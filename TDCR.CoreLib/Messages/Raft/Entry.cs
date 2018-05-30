@@ -13,6 +13,7 @@ namespace TDCR.CoreLib.Messages.Raft
         {
             return new Wire.Raft.Entry
             {
+                Event = Event.ToWire(),
                 Index = Index,
                 Term = Term,
                 Tag = Tag.ToWire()
@@ -23,6 +24,7 @@ namespace TDCR.CoreLib.Messages.Raft
         {
             return new Entry
             {
+                Event = Uid.FromWire(wire.Event),
                 Index = wire.Index,
                 Term = wire.Term,
                 Tag = CommandTag.FromWire(wire.Tag)

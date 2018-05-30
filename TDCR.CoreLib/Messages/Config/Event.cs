@@ -16,7 +16,7 @@ namespace TDCR.CoreLib.Messages.Config
         public Uid[] MilestoneRelations { get; set; }
         public Uid[] ExcludeRelations { get; set; }
         public Uid[] IncludeRelations { get; set; }
-        public Uid[] PendingRelations { get; set; }
+        public Uid[] ResponseRelations { get; set; }
 
         public bool Included {
             get => !Excluded;
@@ -43,8 +43,8 @@ namespace TDCR.CoreLib.Messages.Config
                 wire.ExcludeRelations.Add(r.ToWire());
             foreach (Uid r in IncludeRelations)
                 wire.IncludeRelations.Add(r.ToWire());
-            foreach (Uid r in PendingRelations)
-                wire.PendingRelations.Add(r.ToWire());
+            foreach (Uid r in ResponseRelations)
+                wire.ResponseRelations.Add(r.ToWire());
 
             return wire;
         }
@@ -64,7 +64,7 @@ namespace TDCR.CoreLib.Messages.Config
                 MilestoneRelations = wire.MilestoneRelations.Select(Uid.FromWire).ToArray(),
                 ExcludeRelations = wire.ExcludeRelations.Select(Uid.FromWire).ToArray(),
                 IncludeRelations = wire.IncludeRelations.Select(Uid.FromWire).ToArray(),
-                PendingRelations = wire.PendingRelations.Select(Uid.FromWire).ToArray()
+                ResponseRelations = wire.ResponseRelations.Select(Uid.FromWire).ToArray()
             };
         }
     }

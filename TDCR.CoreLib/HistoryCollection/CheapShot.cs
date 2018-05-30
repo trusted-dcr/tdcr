@@ -12,10 +12,10 @@ namespace TDCR.CoreLib.HistoryCollection
         public Tuple<Uid, EventExecution[]>[] Observed { get; private set; }
         public Dictionary<EventExecution, HashSet<EventExecution>> Graph { get; private set; }
         public EventExecution[] GlobalHistory { get; private set; }
-        
+
         private Dictionary<Uid, HashSet<EventExecution>> EventToExecutions { get; set; }
         private Dictionary<EventExecution, List<Tuple<Uid, int>>> ExecutionsToEvents { get; set; }
-        
+
         private void CascadingInvalidate(EventExecution evex)
         {
             // Get all instances
@@ -50,7 +50,7 @@ namespace TDCR.CoreLib.HistoryCollection
         {
             var history = new EventExecution[Graph.Keys.Count];
             var idx = Graph.Keys.Count;
-            
+
             var traversal = new Stack<EventExecution>();
 
             foreach (var k in Graph.Keys)
@@ -58,12 +58,12 @@ namespace TDCR.CoreLib.HistoryCollection
                 if (k.Marked) continue;
 
                 var node = k;
-                
+
                 while (true)
                 {
                     // Mark
                     node.Marked = true;
-                    
+
                     // If unmarked child, traverse
                     Graph.TryGetValue(node, out HashSet<EventExecution> neighbours);
                     foreach (var c in neighbours)
@@ -114,17 +114,17 @@ namespace TDCR.CoreLib.HistoryCollection
 
         public CheapShot(List<Tuple<Uid, Entry[]>> obs)
         {
-            int createdElements = 0;
-
             // array af event -> event execution array
             var seenExecutions = new HashSet<EventExecution>(); // Prevent duplicate executions from being created.
             Observed = new Tuple<Uid, EventExecution[]>[obs.Count];
             for (int i = 0; i < obs.Count; i++)
             {
-                Observed[i] = new Tuple<Uid, EventExecution[]>(obs[i].Item1, new EventExecution[obs[i].Item2.Length]);
-                for (int j = 0; j < obs[i].Item2.Length; j++)
+                var execs = obs[i].Item2.Where(e => e.Tag.Type.Equals(CommandTag.CommandType.Exec)).ToArray();
+
+                Observed[i] = new Tuple<Uid, EventExecution[]>(obs[i].Item1, new EventExecution[execs.Length]);
+                for (int j = 0; j < execs.Length; j++)
                 {
-                    var evex = new EventExecution(obs[i].Item2[j].Event, obs[i].Item2[j].Tag.Uid);
+                    var evex = new EventExecution(execs[j].Event, execs[j].Tag.Uid);
 
                     // Check if already exists. If it does, add existing instead
                     if (seenExecutions.TryGetValue(evex, out EventExecution found))
@@ -136,7 +136,6 @@ namespace TDCR.CoreLib.HistoryCollection
                     // Else save new
                     seenExecutions.Add(evex);
                     Observed[i].Item2[j] = evex;
-                    createdElements++;
                 }
             }
 

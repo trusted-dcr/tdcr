@@ -12,20 +12,31 @@ namespace TDCR.Console
         public ushort RpcPort { get; set; }
     }
 
-    [Verb("start", HelpText = "Starts a daemon process.")]
+    [Verb("start", HelpText = "Start and configures a daemon process.")]
     public class StartOptions : RpcOptions
     {
-        [Option('c', "config", HelpText = "Load daemon process with config located at given path.")]
+        [Option('c', "config", Required = true, HelpText = "Configure daemon process with config located at given path.")]
+        public string ConfigPath { get; set; }
+
+        [Option('b', "background", HelpText = "Start daemon in background.")]
+        public bool Background { get; set; }
+    }
+
+    [Verb("config", HelpText = "Configures a running daemon process.")]
+    public class ConfigOptions : RpcOptions
+    {
+        [Option('c', "config", Required = true, HelpText = "Configure daemon process with config located at given path.")]
         public string ConfigPath { get; set; }
     }
 
     [Verb("stop", HelpText = "Stop a daemon process.")]
     public class StopOptions : RpcOptions { }
 
-    [Verb("execute", HelpText = "Forcefully execute commands on daemon.")]
+    [Verb("exec", HelpText = "Execute a DCR event.")]
     public class ExecuteOptions : RpcOptions
     {
-
+        [Value(0, HelpText = "UID of event to be executed.")]
+        public string Event { get; set; }
     }
 
     [Verb("history", HelpText = "Collect the global history of the graph.")]
