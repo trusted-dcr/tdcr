@@ -1,5 +1,5 @@
-# Trusted DCR
-Distributed workflow execution using hardware-assisted Byzantine fault tolerance.
+# Trusted DCR CLI
+NET Core CLI for Trusted DCR.
 
 ## Building
 To build the solution the following tools are required:
@@ -7,6 +7,12 @@ To build the solution the following tools are required:
 * Google Protocol Buffers
 
 Further `dotnet` and `protoc` are expected to available in PATH. The following commands are used to build the entire solution. *Note: If first time building, you may have to build twice.*
+
+Make sure the `tdcr-proto` submodule is included by executing:
+```
+git submodule init
+git submodule update
+```
 
 * **Debug:** `tdcr>dotnet build`
 * **Release:** `tdcr>dotnet build -c Release`
