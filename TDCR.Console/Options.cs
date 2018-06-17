@@ -40,7 +40,10 @@ namespace TDCR.Console
     }
 
     [Verb("history", HelpText = "Collect the global history of the graph.")]
-    public class CollectGlobalHistoryOptions : RpcOptions { }
+    public class CollectGlobalHistoryOptions : RpcOptions {
+        [Option('c', "config", HelpText = "Use config located at given path to translate event UIDs to human-readable names.")]
+        public string ConfigPath { get; set; }
+    }
 
     [Verb("log", HelpText = "Retrieve the log of the hosted event.")]
     public class RetrieveLogOptions : RpcOptions { }

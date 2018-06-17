@@ -31,13 +31,7 @@ namespace TDCR.Console
 
         public static void Start(StartOptions opts)
         {
-            var input = File.ReadAllText(opts.ConfigPath);
-            var config = JsonConvert.DeserializeObject<CoreLib.Messages.Config.SgxConfig>(input);
-
             System.Console.Write("Starting daemon...");
-
-            System.Console.WriteLine(Path.Combine(AppContext.BaseDirectory, Defaults.DaemonPath));
-
             Process daemon = new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -61,11 +55,11 @@ namespace TDCR.Console
             }
             System.Console.WriteLine("OK");
 
-            // Get daemon version
-            if (!TryConnectRpc(opts, out SgxDaemon.SgxDaemonClient client))
-                return;
-
-            client.Config(config.ToWire());
+            Config(new ConfigOptions
+            {
+                RpcPort = opts.RpcPort,
+                ConfigPath = opts.ConfigPath
+            });
 
             System.Console.WriteLine($"rpc-port: {opts.RpcPort}");
         }
@@ -75,18 +69,29 @@ namespace TDCR.Console
             if (!TryConnectRpc(opts, out SgxDaemon.SgxDaemonClient client))
                 return;
 
-            client.Stop(new Empty());
+            try
+            {
+                client.Stop(new Empty());
+            }
+            catch {}
         }
 
         public static void Config(ConfigOptions opts)
         {
-            var input = File.ReadAllText(opts.ConfigPath);
-            var config = JsonConvert.DeserializeObject<CoreLib.Messages.Config.SgxConfig>(input);
+            if (!TryReadConfig(opts.ConfigPath, out CoreLib.Messages.Config.SgxConfig config))
+                return;
 
             if (!TryConnectRpc(opts, out SgxDaemon.SgxDaemonClient client))
                 return;
 
-            client.Config(config.ToWire());
+            try
+            {
+                client.Config(config.ToWire());
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine($"Error while configuring enclave: {ex.Message}");
+            }
         }
 
         public static void Execute(ExecuteOptions opts)
@@ -94,16 +99,36 @@ namespace TDCR.Console
             if (!TryConnectRpc(opts, out SgxDaemon.SgxDaemonClient client))
                 return;
 
-            client.Execute(new Uid(opts.Event).ToWire());
+            try
+            {
+                client.Execute(new Uid(opts.Event).ToWire());
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine($"Error while executing: {ex.Message}");
+            }
         }
 
         public static void CollectGlobalHistory(CollectGlobalHistoryOptions opts)
         {
+            CoreLib.Messages.Config.SgxConfig config = null;
+            if (!string.IsNullOrEmpty(opts.ConfigPath) && !TryReadConfig(opts.ConfigPath, out config))
+                return;
+
             if (!TryConnectRpc(opts, out SgxDaemon.SgxDaemonClient client))
                 return;
 
             System.Console.WriteLine("Collecting history...");
-            Snapshot snapshot = client.History(new Empty(), new CallOptions(deadline: DateTime.MaxValue));
+            Snapshot snapshot;
+            try
+            {
+                snapshot = client.History(new Empty(), new CallOptions(deadline: DateTime.MaxValue));
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine($"Error while collecting history: {ex.Message}");
+                return;
+            }
 
             // Convert snapshot data structure
             var result = new List<Tuple<Uid, Entry[]>>();
@@ -117,20 +142,18 @@ namespace TDCR.Console
             }
 
             var cs = new CheapShot(result);
-
-            var historySB = new StringBuilder("Global history: (");
-            for (int i = 0; i < cs.GlobalHistory.Length; i++)
+            foreach (EventExecution exec in cs.GlobalHistory)
             {
-                // TODO: Look-up human names
-                var name = cs.GlobalHistory[i].Event + "_" + cs.GlobalHistory[i].ExecutionID;
+                string eventName = config?.Workflow.Events.First(e => e.Uid == exec.Event).Name;
 
-                historySB.Append(name);
-                if (i + 1 < cs.GlobalHistory.Length)
-                    historySB.Append(", ");
+                System.Console.WriteLine();
+                System.Console.ForegroundColor = ConsoleColor.DarkGreen;
+                System.Console.WriteLine($"exec  {exec.ExecutionID}");
+                System.Console.ResetColor();
+                System.Console.WriteLine($"euid  {exec.Event}");
+                if (eventName != null)
+                    System.Console.WriteLine($"event {eventName}");
             }
-            historySB.Append(")");
-
-            System.Console.WriteLine(historySB.ToString());
         }
 
         public static void RetrieveLog(RetrieveLogOptions opts)
@@ -160,6 +183,22 @@ namespace TDCR.Console
             {
                 System.Console.WriteLine($"FAILED ({ex.Message})");
                 client = null;
+                return false;
+            }
+        }
+
+        private static bool TryReadConfig(string path, out CoreLib.Messages.Config.SgxConfig config)
+        {
+            try
+            {
+                string input = File.ReadAllText(path);
+                config = JsonConvert.DeserializeObject<CoreLib.Messages.Config.SgxConfig>(input);
+                return true;
+            }
+            catch
+            {
+                System.Console.WriteLine($"Unable to read configuration at: {path}");
+                config = null;
                 return false;
             }
         }

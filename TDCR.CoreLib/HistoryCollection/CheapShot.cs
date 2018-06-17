@@ -40,7 +40,7 @@ namespace TDCR.CoreLib.HistoryCollection
 
                     // Check if in owners list
                     EventToExecutions.TryGetValue(ex.Event, out HashSet<EventExecution> val);
-                    if (!val.Contains(ex))
+                    if (val == null || !val.Contains(ex))
                         // Not in owners list. Mark as invalid and go through all instances and set as invalid
                         CascadingInvalidate(ex);
                 }
