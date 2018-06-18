@@ -1,6 +1,7 @@
 ﻿using Google.Protobuf;
 using System;
 using System.Collections.Generic;
+using TDCR.CoreLib.Messages.Raft;
 
 namespace TDCR.CoreLib.Messages.Network
 {
@@ -16,7 +17,7 @@ namespace TDCR.CoreLib.Messages.Network
         {
             types = new Dictionary<Type, Wire.Network.Container.Types.PayloadType>
             {
-
+                { typeof(AppendRequest), Wire.Network.Container.Types.PayloadType.AppendRequest }
             };
 
             funcs = new Dictionary<Wire.Network.Container.Types.PayloadType, Func<ByteString, IPayload<IMessage>>>

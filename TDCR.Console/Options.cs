@@ -35,6 +35,9 @@ namespace TDCR.Console
     [Verb("exec", HelpText = "Execute a DCR event.")]
     public class ExecuteOptions : RpcOptions
     {
+        [Option('c', "config", HelpText = "Use config located at given path to translate event UIDs to human-readable names.")]
+        public string ConfigPath { get; set; }
+
         [Value(0, HelpText = "UID of event to be executed.")]
         public string Event { get; set; }
     }
@@ -47,5 +50,12 @@ namespace TDCR.Console
 
     [Verb("log", HelpText = "Retrieve the log of the hosted event.")]
     public class RetrieveLogOptions : RpcOptions { }
+
+    [Verb("force-exec", HelpText = "Attempt to force an EXEC entry onto the log of a peer")]
+    public class ForceExecOptions : RpcOptions
+    {
+        [Option('c', "config", Required = true, HelpText = "Use config located at given path.")]
+        public string ConfigPath { get; set; }
+    }
 
 }

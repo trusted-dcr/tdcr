@@ -20,13 +20,14 @@ namespace TDCR.Console
     {
         public static void Main(string[] args)
         {
-            Parser.Default.ParseArguments<StartOptions, StopOptions, ConfigOptions, ExecuteOptions, CollectGlobalHistoryOptions, RetrieveLogOptions>(args)
+            Parser.Default.ParseArguments<StartOptions, StopOptions, ConfigOptions, ExecuteOptions, CollectGlobalHistoryOptions, RetrieveLogOptions, ForceExecOptions>(args)
                 .WithParsed((StartOptions opts) => Start(opts))
                 .WithParsed((StopOptions opts) => Stop(opts))
                 .WithParsed((ConfigOptions opts) => Config(opts))
                 .WithParsed((ExecuteOptions opts) => Execute(opts))
                 .WithParsed((CollectGlobalHistoryOptions opts) => CollectGlobalHistory(opts))
-                .WithParsed((RetrieveLogOptions opts) => RetrieveLog(opts));
+                .WithParsed((RetrieveLogOptions opts) => RetrieveLog(opts))
+                .WithParsed((ForceExecOptions opts) => ForceExec(opts));
         }
 
         public static void Start(StartOptions opts)
@@ -96,16 +97,31 @@ namespace TDCR.Console
 
         public static void Execute(ExecuteOptions opts)
         {
+            CoreLib.Messages.Config.SgxConfig config = null;
+            if (!string.IsNullOrEmpty(opts.ConfigPath) && !TryReadConfig(opts.ConfigPath, out config))
+                return;
+
             if (!TryConnectRpc(opts, out SgxDaemon.SgxDaemonClient client))
                 return;
 
+            Uid euid = new Uid(opts.Event);
+            string eventName = config?.Workflow.Events.First(e => e.Uid == euid).Name;
+
+            System.Console.WriteLine();
+            System.Console.ForegroundColor = ConsoleColor.DarkYellow;
+            System.Console.WriteLine("exec");
+            System.Console.ResetColor();
+            System.Console.WriteLine($"euid  {euid}");
+            if (eventName != null)
+                System.Console.WriteLine($"event {eventName}");
+
             try
             {
-                client.Execute(new Uid(opts.Event).ToWire());
+                client.Execute(euid.ToWire());
             }
             catch (Exception ex)
             {
-                System.Console.WriteLine($"Error while executing: {ex.Message}");
+                System.Console.WriteLine($"\nError while executing: {ex.Message}");
             }
         }
 
@@ -168,6 +184,60 @@ namespace TDCR.Console
             }
 
             System.Console.WriteLine("End of log");
+        }
+
+        public static void ForceExec(ForceExecOptions opts)
+        {
+            CoreLib.Messages.Config.SgxConfig config = null;
+            if (!string.IsNullOrEmpty(opts.ConfigPath) && !TryReadConfig(opts.ConfigPath, out config))
+                return;
+
+            if (!TryConnectRpc(opts, out SgxDaemon.SgxDaemonClient client))
+                return;
+
+            Peer peer = config.Peers
+                .First(p => p.Addr.EndPoint.Port == opts.RpcPort);
+
+            AppendRequest req = new AppendRequest
+            {
+                CommitIndex = 0,
+                Entries = new[]
+                {
+                    new Entry
+                    {
+                        Event = peer.Event,
+                        Term = 9999,
+                        Index = 9999,
+                        Tag = new CommandTag
+                        {
+                            Type = CommandTag.CommandType.Exec,
+                            Uid = new Uid()
+                        }
+                    }
+                }
+            };
+
+            string eventName = config?.Workflow.Events.First(e => e.Uid == peer.Event).Name;
+            System.Console.WriteLine();
+            System.Console.ForegroundColor = ConsoleColor.DarkYellow;
+            System.Console.WriteLine($"exec  {req.Entries[0].Tag.Uid}");
+            System.Console.ResetColor();
+            System.Console.WriteLine($"euid  {peer.Event}");
+            if (eventName != null)
+                System.Console.WriteLine($"event {eventName}");
+
+            try
+            {
+                client.Send(new Container
+                {
+                    Payload = req,
+                    Sender = peer.Uid
+                }.ToWire());
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine($"\nError while executing: {ex.Message}");
+            }
         }
 
         private static bool TryConnectRpc(RpcOptions opts, out CoreLib.Wire.Sgx.SgxDaemon.SgxDaemonClient client)
